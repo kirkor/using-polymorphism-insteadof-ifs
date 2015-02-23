@@ -4,6 +4,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Context {
-	public boolean isSap = false;
+	public Boolean isSap = null;
 	public String baseStoreName;
 }

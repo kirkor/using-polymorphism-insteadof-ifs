@@ -84,33 +84,31 @@ public class PolymorphicInterceptorForServices implements MethodInterceptor {
 
 		if (contextHasBeenSearched()) {
 			return decideWhichServiceIsMostRelevant();
-		} else if (beansOfType != null) {
+		} else if (beansOfType != null && beansOfType.size() > 1) {
 			// one implementation, just proceed
-			if (beansOfType.size() > 1) {
-				// run only once per interceptor instance
-				for (Entry<String, ? extends Object> entry : beansOfType.entrySet()) {
-					Object service = entry.getValue();
+			// run only once per interceptor instance
+			for (Entry<String, ? extends Object> entry : beansOfType.entrySet()) {
+				Object service = entry.getValue();
 
-					if (isServiceOnlyForBaseStore(service)) {
-						this.baseStoreServices.put(((ServiceOnlyForBaseStore) entry.getValue()).getBaseStoreUuid(), entry.getValue());
+				if (isServiceOnlyForBaseStore(service)) {
+					this.baseStoreServices.put(((ServiceOnlyForBaseStore) entry.getValue()).getBaseStoreUuid(), entry.getValue());
 
-						continue;
-					}
-
-					if (isServiceOnlyForSapMarkets(service)) {
-						this.sapService = entry.getValue();
-
-						continue;
-					}
-
-					if (isServiceOnlyForNonSapMarkets(service)) {
-						this.nonSapService = entry.getValue();
-
-						continue;
-					}
+					continue;
 				}
 
+				if (isServiceOnlyForSapMarkets(service)) {
+					this.sapService = entry.getValue();
+
+					continue;
+				}
+
+				if (isServiceOnlyForNonSapMarkets(service)) {
+					this.nonSapService = entry.getValue();
+
+					continue;
+				}
 			}
+
 		}
 
 		this.defaultService = methodInvocation.getThis();
@@ -123,11 +121,11 @@ public class PolymorphicInterceptorForServices implements MethodInterceptor {
 			return this.baseStoreServices.get(ctx.baseStoreName);
 		}
 
-		if (this.sapService != null && ctx.isSap) {
+		if (this.sapService != null && ctx.isSap != null && ctx.isSap) {
 			return this.sapService;
 		}
 
-		if (this.nonSapService != null && !ctx.isSap) {
+		if (this.nonSapService != null && ctx.isSap != null && !ctx.isSap) {
 			return this.sapService;
 		}
 

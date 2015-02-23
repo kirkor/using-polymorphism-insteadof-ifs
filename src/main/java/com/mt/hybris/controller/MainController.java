@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mt.hybris.context.Context;
@@ -16,17 +16,18 @@ import com.mt.hybris.services.GeolocationExampleService;
 public class MainController {
 
 	@Autowired
-	private GeolocationExampleService someService;
+	private GeolocationExampleService geolocationExample;
 
 	@Autowired
 	private Context ctx;
 
-	@RequestMapping("/service/{baseStoreName}/{isSap}")
-	public String index(@PathVariable("baseStoreName") String baseStoreName, @PathVariable("isSap") boolean isSap) {
+	@RequestMapping("/service/geolocation")
+	public String index(@RequestParam(value = "baseStoreName", required = false) String baseStoreName,
+			@RequestParam(value = "isSap", required = false, defaultValue = "") Boolean isSap) {
 		ctx.baseStoreName = baseStoreName;
 		ctx.isSap = isSap;
 
-		return someService.sayHello();
+		return geolocationExample.sayHello();
 	}
 
 	@RequestMapping("/resource")
